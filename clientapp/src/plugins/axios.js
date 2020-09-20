@@ -12,5 +12,5 @@ export default {
 
 export const api = ax.create({
     baseURL: 'http://localhost:5001/api/',
-    timeout: 1000
+    timeout: 3000
 });
