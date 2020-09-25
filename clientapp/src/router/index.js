@@ -2,11 +2,11 @@
 import Router from 'vue-router'
 
 
-import Home from '@/views/home.vue'
-import Login from '@/views/login.vue'
-import CreateForm from '@/views/create_form.vue'
-import NotFound from '@/views/404.vue';
-import Form from '@/views/form.vue';
+import Home from '../views/home.vue'
+import Login from '../views/login.vue'
+import CreateForm from '../views/create_form.vue'
+import NotFound from '../views/404.vue';
+import Form from '../views/form.vue';
 Vue.use(Router)
 
 export default new Router({

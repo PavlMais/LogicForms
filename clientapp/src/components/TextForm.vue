@@ -6,7 +6,7 @@
         <div class="card-body">
             <h5 class="card-title">{{item.title}}</h5>
 
-            <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+            <input type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1">
         </div>
     </div>
     </div>

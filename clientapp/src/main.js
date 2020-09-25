@@ -10,7 +10,9 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 Vue.use(VueAxios)
 Vue.config.productionTip = false
 
-
+Array.prototype.remove = function (item) {
+    return this.splice(this.indexOf(item), 1);
+}
 
 
 new Vue({

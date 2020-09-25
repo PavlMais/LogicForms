@@ -8,7 +8,7 @@
 </template>
 
 <script>
-    import { api } from '@/plugins/axios'
+    import { api } from '../plugins/axios'
 
 
 export default {

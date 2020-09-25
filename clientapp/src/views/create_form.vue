@@ -2,12 +2,10 @@
     <div class="container">
         <div class="dock-components bg-dark">
             <div class="btn-group-vertical mt-5 w-100">
-
-                <button type="button" @click="add_node('btext')" class="btn btn-outline-light">Block text</button>
-                <button type="button" @click="add_node('text')" class="btn btn-outline-light">Text</button>
-                <button type="button" @click="add_node('num')" class="btn btn-outline-light">Number</button>
-                <button type="button" @click="add_node('choise')" class="btn btn-outline-light">Choise</button>
-                <button type="button" @click="add_node('m-choise')" class="btn btn-outline-light">Multiple choise </button>
+               
+                <button type="button" @click="add_node(NodeTypes.INFO_BLOCK)" class="btn btn-outline-light">Info block</button>
+                <button type="button" @click="add_node(NodeTypes.QUESTION_TEXT)" class="btn btn-outline-light">Text</button>
+                <button type="button" @click="add_node(NodeTypes.QUESTION_CHOISE)" class="btn btn-outline-light">Choise</button>
             </div>
 
             <div class="btn-group-vertical mt-5 w-100">
@@ -62,14 +60,14 @@
     import Rete from "rete"
     import ConnectionPlugin from 'rete-connection-plugin'
     import VueRenderPlugin from 'rete-vue-render-plugin'
-    import { api } from '@/plugins/axios.js'
-    import { NodeTypes } from '@/config'
+    import { api } from '../plugins/axios.js'
+    import { NodeTypes } from '../config'
 
-    import StartQuestionNode from '@/rete/nodes/start_q_node.js'
-    import ChoiseQuestionNode from '@/rete/nodes/choise_question_node.js'
-    import EndQuestionNode from "@/rete/nodes/end_q_node"
-
-    import TextQuestionNode from '@/rete/nodes/text_question_node.js'
+    import StartNode from '../rete/nodes/start_node.js'
+    import ChoiseQuestionNode from '../rete/nodes/choise_question_node.js'
+    import EndNode from "../rete/nodes/end_node"
+    import InfoBlockNode from '../rete/nodes/infoblock_node.js'
+    import TextQuestionNode from '../rete/nodes/text_question_node.js'
 
     export default {
         components: {},
@@ -79,43 +77,26 @@
                 data: null,
                 editor: null,
                 m_socket: new Rete.Socket('String value'),
-                node_types: {
-                    startNode: null,
-                    textQNode: null,
-                    numQNode: null,
-                    choiseQNode: null,
-                    endNode: null,
-                    textNode: null
-                }
+                NodeTypes,
+                node_builders: []
             }
         },
+        
         methods: {
 
             async add_node(node_type) {
-                switch (node_type) {
-                    case 'btext':
-                        this.editor.addNode(await this.textNode.createNode({ m_socket: this.m_socket }));
-                        break;
-                    case 'text':
-                        this.editor.addNode(await this.textQNode.createNode({ m_socket: this.m_socket }));
-                        break;
-                    case 'choise':
-                        this.editor.addNode(await this.choiseQNode.createNode({ m_socket: this.m_socket }));
-                        break;
-                    default:
-                        console.error('Invalid node type ' + node_type);
-                }
+                let node_builder = this.node_builders.find(n => n.type == node_type)
+                if (node_builder == undefined) console.error('Type node ' + node_type + ' is not exist!')
 
+               
+                let node = await node_builder.createNode({ m_socket: this.m_socket })
+                this.editor.addNode(node)
             },
             create_form() {
                 var data = [];
 
                 var editor_data = this.editor.toJSON();
-
-
                 var nodes = Array.from(Object.values(editor_data.nodes));
-
-                console.log(nodes);
 
                 nodes.forEach((node) => {
                     console.log(node)
@@ -127,16 +108,16 @@
                     };
                     switch (node.data.type) {
                         case NodeTypes.START:
-                        case NodeTypes.TEXT:
+                        case NodeTypes.INFO_BLOCK:
                         case NodeTypes.QUESTION_TEXT:
                             item.next_id = node.outputs.num.connections[0].node;
                             break;
                         case NodeTypes.QUESTION_CHOISE:
                             item.items = [];
-                            node.data.items.forEach((i) => {
+                            node.data.choise_items.forEach((i) => {
                                 item.items.push({
                                     title: i.value,
-                                    next_id: i.out_socket.connections[0].input.node.id,
+                                    next_id: i.output.connections[0].input.node.id,
                                 });
                             });
                             break;
@@ -144,15 +125,9 @@
 
                     data.push(item);
                 });
-
-                console.log('result:');
-                console.log(data);
-
                 this.data = data;
             },
             save_form() {
-
-                console.log(typeof (this.data));
 
                 api.post('/forms', {
                     title: this.title,
@@ -177,25 +152,23 @@
                 this.editor.use(ConnectionPlugin)
                 this.editor.use(VueRenderPlugin)
 
+                let start_node = new EndNode()
+                let end_node = new StartNode()
 
-                this.endNode = new EndQuestionNode();
-                this.startNode = new StartQuestionNode();
-                this.textQNode = new TextQuestionNode()
-                this.choiseQNode = new ChoiseQuestionNode();
-                //this.textNode = new TextNode();
+                this.node_builders = [
+                    start_node,
+                    end_node,
+                    new TextQuestionNode(),
+                    new ChoiseQuestionNode(),
+                    new InfoBlockNode()
+                ]
 
-
-
-                this.editor.register(this.endNode);
-                this.editor.register(this.startNode);
-                this.editor.register(this.textQNode);
-                this.editor.register(this.choiseQNode)
-                //this.editor.register(this.textNode);
+                this.node_builders.forEach(n => this.editor.register(n))
 
                 this.editor.view.resize();
 
-                this.editor.addNode(await this.startNode.createNode({ m_socket: this.m_socket }));
-                this.editor.addNode(await this.endNode.createNode({ m_socket: this.m_socket }));
+                this.editor.addNode(await start_node.createNode({ m_socket: this.m_socket }));
+                this.editor.addNode(await end_node.createNode({ m_socket: this.m_socket }));
             }
         },
         mounted() {

@@ -2,7 +2,11 @@
 
 var VueTextControl = {
     props: ['readonly', 'emitter', 'ikey', 'getData', 'putData'],
-    template: '<input type="text" :readonly="readonly" :value="value" @input="change($event)" @dblclick.stop="" />',
+    template: `
+            <div class="input-group input-group-sm">
+              <input type="text" class="form-control" :readonly="readonly" placeholder="Question" :value="value" @input="change($event)" @dblclick.stop="">
+            </div>
+            `,
     data() {
         return {
             value: "",
@@ -14,8 +18,9 @@ var VueTextControl = {
             this.update();
         },
         update() {
-            if (this.ikey)
-                this.putData(this.ikey, this.value)
+            //if (this.ikey)
+            //    this.putData(this.ikey, this.value)
+            this.putData('title', this.value)
             this.emitter.trigger('process');
         }
     },

@@ -1,5 +1,5 @@
 ﻿import Rete from "rete";
-import ModifyList from '@/components/modif_list.vue'
+import ModifyList from '../../components/modif_list.vue'
 
 
 var VueListControl = {
@@ -46,7 +46,7 @@ export default class ListControl extends Rete.Control {
         super(key);
         this.data.render = 'vue';
         this.component = VueListControl;
-        node.choise_items = []
+        node.data.choise_items = []
         this.props = { emitter, ikey: key, readonly, onItemAdded, onItemRemoved, 'node': node };
     }
 

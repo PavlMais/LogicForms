@@ -36,10 +36,16 @@
         components: {
             Socket,
         },
+        props: ['node'],
         data: function () {
             return {}
         },
-        methods: {}
+        methods: {
+            del_node() {
+                console.log('del')
+                console.log(this.node)
+            }
+        }
     }
 </script>
 

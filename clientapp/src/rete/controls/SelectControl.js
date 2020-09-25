@@ -1,21 +1,28 @@
 ﻿import Rete from "rete";
+import SelectVue from '../../common/select.vue'
 
 var VueSelectControl = {
     props: ['readonly', 'ikey', 'getData', 'putData', 'items', 'emitter'],
+    components: { SelectVue },
     template: `
-        <select class="custom-select custom-select-sm" @change="change" id="inputGroupSelect01" :value="value" :readonly="readonly">
-                <option  v-for="(item, index) in items" :value="item" :key="index">{{item}}</option>
-                
-       </select>
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">Type</label>
+            </div>
+
+            <SelectVue :items="items" v-model="selected" @change="change"></SelectVue>
+        </div>
+
             `,
     data() {
         return {
-            value: ''
+            value: '',
+            selected: ''
         }
     },
     methods: {
-        change(e) {
-            this.value = e.target.value;
+        change(value) {
+            this.value = value;
             this.update();
         },
         update() {

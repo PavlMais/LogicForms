@@ -6,7 +6,7 @@
 
             <TextForm        v-if="q_item.type === NodeTypes.QUESTION_TEXT" :item="q_item"></TextForm>
             <ChooseForm v-else-if="q_item.type === NodeTypes.QUESTION_CHOISE" @selectChanged="selectChanged" :item="q_item"></ChooseForm>
-            <TextBForm   v-else-if="q_item.type === NodeTypes.TEXT" :item="q_item"></TextBForm>
+            <TextBForm   v-else-if="q_item.type === NodeTypes.INFO_BLOCK" :item="q_item"></TextBForm>
             <div        v-else-if="q_item.type === NodeTypes.END" class="px-3">
                 <button @click="complete_form" class="btn btn-dark btn-lg btn-block ">Complete form</button>
             </div>
@@ -18,11 +18,11 @@
 </template>
 
 <script>
-    import TextForm from '@/components/TextForm.vue';
-    import ChooseForm from '@/components/ChoseForm.vue';
-    import TextBForm from '@/components/TextBForm.vue';
-    import { api } from '@/plugins/axios';
-    import { NodeTypes } from '@/config.js';
+    import TextForm from '../components/TextForm.vue';
+    import ChooseForm from '../components/ChoseForm.vue';
+    import TextBForm from '../components/TextBForm.vue';
+    import { api } from '../plugins/axios';
+    import { NodeTypes } from '../config.js';
     export default {
         components: {
             TextForm,
